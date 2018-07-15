@@ -22,6 +22,9 @@ function query($query)
     return $rows;
 }
 
+/* NOTE:
+* make sure tables exist
+*/
 
 query('CREATE TABLE IF NOT EXISTS wifi
 (
@@ -37,6 +40,10 @@ query('CREATE TABLE IF NOT EXISTS system
     system_key VARCHAR(140) NOT NULL,
     system_value VARCHAR(140) NOT NULL
 );');
+
+/*
+* main functions 
+*/
 
 function get_wifi_count()
 {
@@ -59,25 +66,80 @@ function get_last_wifi()
 	return reset(query("SELECT * FROM wifi ORDER BY connect_time DESC LIMIT 1;"));
 }
 
-if (get_wifi_count() > 1) {
-	if (empty(query("SELECT * FROM wifi WHERE connect_time > DATE_SUB(now(), INTERVAL 1 MINUTE);"))) {
-		
+function was_recently_connected()
+{
+	if (get_wifi_count() === 0) {
+		return false;
+	} else {
+		if (empty(query("SELECT * FROM wifi WHERE connect_time > DATE_SUB(now(), INTERVAL 1 MINUTE);"))) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
 
-if (get_wifi_count() > 1) {
-	if (get_last_wifi()['wifi_name'] !== 'Beck_Net' && $wifi === 'Beck_Net') update_last_location('arrived_home');
-	else if (get_last_wifi()['wifi_name'] === 'Beck_Net' && $wifi === 'Beck_Net') update_last_location('home');
-	else if (get_last_wifi()['wifi_name'] === 'Beck_Net' && $wifi !== 'Beck_Net') update_last_location('leaving_home');
-	else if (get_last_wifi()['wifi_name'] !== 'newhome' && $wifi === 'newhome') update_last_location('arrived_work');
-	else if (get_last_wifi()['wifi_name'] === 'newhome' && $wifi === 'newhome') update_last_location('work');
-	else if (get_last_wifi()['wifi_name'] === 'newhome' && $wifi !== 'newhome') update_last_location('leaving_work');
-	else update_last_location('unknown');
+function is_last_wifi($wifi)
+{
+	$lastWifi = reset(query("SELECT * FROM wifi ORDER BY connect_time DESC LIMIT 1"))['wifi_name'];
+	return !empty($lastWifi) && $lastWifi === $wifi;
 }
 
+function set_at_location($wifi)
+{
+	switch ($wifi) {
+		case 'Beck_Net':
+			update_last_location('home');
+		break;
+		case 'newhome':
+			update_last_location('work');
+		break;
+		default:
+			update_last_location('unknown');
+	}
+}
+
+function set_leaving_location($wifi)
+{
+	switch ($wifi) {
+		case 'Beck_Net':
+			update_last_location('leaving_home');
+		break;
+		case 'newhome':
+			update_last_location('leaving_work');
+		break;
+		default:
+			update_last_location('leaving_unknown');
+	}
+}
+
+function set_arriving_location($wifi)
+{
+	switch ($wifi) {
+		case 'Beck_Net':
+			update_last_location('arrived_home');
+		break;
+		case 'newhome':
+			update_last_location('arrived_work');
+		break;
+		default:
+			update_last_location('arrived_unknown');
+	}
+}
+
+/* NOTE:
+*
+* here is the main logic for deciding if recently arrived at location
+*
+*/
+if (was_recently_connected() && is_last_wifi($wifi)) {
+		set_at_location($wifi);
+} else if (!was_recently_connected()) {
+	set_arriving_location($wifi);
+}
+
+
 query("INSERT INTO wifi (wifi_name) VALUES ('$wifi');");
-
-
 
 clean_wifi();
 
