@@ -60,6 +60,12 @@ function get_last_wifi()
 }
 
 if (get_wifi_count() > 1) {
+	if (empty(query("SELECT * FROM wifi WHERE connect_time > DATE_SUB(now(), INTERVAL 1 MINUTE);"))) {
+		
+	}
+}
+
+if (get_wifi_count() > 1) {
 	if (get_last_wifi()['wifi_name'] !== 'Beck_Net' && $wifi === 'Beck_Net') update_last_location('arrived_home');
 	else if (get_last_wifi()['wifi_name'] === 'Beck_Net' && $wifi === 'Beck_Net') update_last_location('home');
 	else if (get_last_wifi()['wifi_name'] === 'Beck_Net' && $wifi !== 'Beck_Net') update_last_location('leaving_home');
