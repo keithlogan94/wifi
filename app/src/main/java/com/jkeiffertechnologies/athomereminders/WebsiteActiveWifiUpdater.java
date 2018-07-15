@@ -25,15 +25,17 @@ public class WebsiteActiveWifiUpdater extends RepetitiveAction {
 
     @Override
     protected void interval() throws IOException {
-        new Runnable() {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
+                try  {
                     updateServer();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-        }.run();
+
+        });
+        thread.start();
     }
 }

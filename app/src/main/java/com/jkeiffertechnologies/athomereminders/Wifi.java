@@ -14,8 +14,16 @@ public class Wifi {
     String wifiName = null;
 
     public Wifi(Context context) {
-        wifiName = getWifiName(context);
+        wifiName = cleanWifiName(getWifiName(context));
         System.out.println(wifiName);
+    }
+
+    private String cleanWifiName(String wifiName) {
+        String newWifiName = "";
+        for (int i = 0; i < wifiName.length(); ++i) {
+            if (wifiName.charAt(i) != '"') newWifiName += wifiName.charAt(i);
+        }
+        return newWifiName;
     }
 
     private String getWifiName(Context context) {
