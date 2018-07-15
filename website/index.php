@@ -56,9 +56,9 @@ function clean_wifi()
     query("DELETE FROM wifi WHERE connect_time < DATE_SUB(\"$lastWifiTime\", INTERVAL 1 MINUTE);");
 }
 
-function update_last_location($location)
+function update_system($key, $value)
 {
-	query("INSERT INTO system (system_key, system_value) VALUES ('last_location', '$location');");
+	query("INSERT INTO system (system_key, system_value) VALUES ('$key', '$value');");
 }
 
 function get_last_wifi()
@@ -89,13 +89,13 @@ function set_at_location($wifi)
 {
 	switch ($wifi) {
 		case 'Beck_Net':
-			update_last_location('home');
+			update_system('last_location', 'home');
 		break;
 		case 'newhome':
-			update_last_location('work');
+			update_system('last_location', 'work');
 		break;
 		default:
-			update_last_location('unknown');
+			update_system('last_location', 'unknown');
 	}
 }
 
@@ -103,13 +103,13 @@ function set_arriving_location($wifi)
 {
 	switch ($wifi) {
 		case 'Beck_Net':
-			update_last_location('arrived_home');
+			update_system('arrived_location', 'home');
 		break;
 		case 'newhome':
-			update_last_location('arrived_work');
+			update_system('arrived_location', 'work');
 		break;
 		default:
-			update_last_location('arrived_unknown');
+			update_system('arrived_location', 'unknown');
 	}
 }
 
