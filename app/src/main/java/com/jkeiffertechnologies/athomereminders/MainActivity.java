@@ -12,6 +12,6 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("Starting");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        WebsiteActiveWifiUpdater websiteActiveWifiUpdater = new WebsiteActiveWifiUpdater(getApplicationContext());
+        startService(new Intent(this, BackgroundService.class));
     }
 }
