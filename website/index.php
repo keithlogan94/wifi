@@ -99,20 +99,6 @@ function set_at_location($wifi)
 	}
 }
 
-function set_leaving_location($wifi)
-{
-	switch ($wifi) {
-		case 'Beck_Net':
-			update_last_location('leaving_home');
-		break;
-		case 'newhome':
-			update_last_location('leaving_work');
-		break;
-		default:
-			update_last_location('leaving_unknown');
-	}
-}
-
 function set_arriving_location($wifi)
 {
 	switch ($wifi) {
